@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "GKiW_Lab2.h"
-
+#include <list>
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -36,6 +36,8 @@ int main(int argc, char* argv[])
 // Tablica przechowująca stan klawiszy w formie flag, indeksowana wg kodów ASCII.
 bool keystate[256];
 
+std::list<unsigned char> pressedKeys;
+
 // Obsługa zdarzenia, gdy zostanie wciśnięty klawisz - zdarzenie nieoodporne na repetycję klawiszy.
 void OnKeyPress(unsigned char key, int x, int y) {
 	printf("KeyPress: %c\n", key);
@@ -48,6 +50,8 @@ void OnKeyPress(unsigned char key, int x, int y) {
 // Obsługa naszego własnego zdarzenia, gdy zostanie po raz pierwszy wciśnięty klawisz - zdarzenie odporne na repetycję.
 void OnKeyDown(unsigned char key, int x, int y) {
 	//printf("KeyDown: %c\n", key);
+	pressedKeys.push_back(key);
+	memset(keystate, false, sizeof(keystate));
 	if (key == 27) { // ESC - wyjście
 		glutLeaveMainLoop();
 	}
@@ -55,8 +59,12 @@ void OnKeyDown(unsigned char key, int x, int y) {
 
 // Obsługa zdarzenia puszczenia klawisza.
 void OnKeyUp(unsigned char key, int x, int y) {
+	pressedKeys.remove(key);
 	printf("KeyUp: %c\n", key);
 	keystate[key] = false;
+	if (!pressedKeys.empty()) {
+		keystate[pressedKeys.back()] = true;
+	}
 }
 
 // Aktualizacja stanu gry - wywoływana za pośrednictwem zdarzenia-timera.
@@ -77,6 +85,15 @@ void OnTimer(int id) {
 		player.pos.x -= player.dir.x * player.speed;
 		player.pos.y -= player.dir.y * player.speed;
 		player.pos.z -= player.dir.z * player.speed;
+	}
+
+	if (keystate['a']) {
+		player.pos.x -= player.dir.x * player.speed + 0.1f;
+	}
+
+	// Chodzenie do tyłu:
+	if (keystate['d']) {
+		player.pos.x += player.dir.x * player.speed + 0.1f;
 	}
 
 }
