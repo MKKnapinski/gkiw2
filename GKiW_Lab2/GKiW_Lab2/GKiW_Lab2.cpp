@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "GKiW_Lab2.h"
 #include <list>
+#include <math.h>
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -37,6 +38,10 @@ int main(int argc, char* argv[])
 bool keystate[256];
 
 std::list<unsigned char> pressedKeys;
+unsigned char lastReleasedKey;
+int iterations = 1000;
+float angle = 0.0f;
+const float  PI = 3.14159265358979f;
 
 // Obsługa zdarzenia, gdy zostanie wciśnięty klawisz - zdarzenie nieoodporne na repetycję klawiszy.
 void OnKeyPress(unsigned char key, int x, int y) {
@@ -50,6 +55,8 @@ void OnKeyPress(unsigned char key, int x, int y) {
 // Obsługa naszego własnego zdarzenia, gdy zostanie po raz pierwszy wciśnięty klawisz - zdarzenie odporne na repetycję.
 void OnKeyDown(unsigned char key, int x, int y) {
 	//printf("KeyDown: %c\n", key);
+	player.speed = 0.1f;
+	iterations = 1000;
 	pressedKeys.push_back(key);
 	memset(keystate, false, sizeof(keystate));
 	if (key == 27) { // ESC - wyjście
@@ -57,13 +64,29 @@ void OnKeyDown(unsigned char key, int x, int y) {
 	}
 }
 
+void slowDownToStop(int id) {
+	if (player.speed > 0.01 && iterations > 0 && pressedKeys.empty()) {
+		player.speed -= 0.01;
+		glutTimerFunc(50, slowDownToStop, 1);
+	}
+	else {
+		keystate[lastReleasedKey] = false;
+		return;
+	}
+	iterations--;
+}
+
 // Obsługa zdarzenia puszczenia klawisza.
 void OnKeyUp(unsigned char key, int x, int y) {
+	lastReleasedKey = key;
 	pressedKeys.remove(key);
 	printf("KeyUp: %c\n", key);
-	keystate[key] = false;
 	if (!pressedKeys.empty()) {
+		keystate[key] = false;
 		keystate[pressedKeys.back()] = true;
+	}
+	if (pressedKeys.empty()) {
+		slowDownToStop(1);
 	}
 }
 
@@ -88,13 +111,27 @@ void OnTimer(int id) {
 	}
 
 	if (keystate['a']) {
-		player.pos.x -= player.dir.x * player.speed + 0.1f;
+		player.pos.x -= player.dir.x * player.speed + player.speed;
+		player.pos.y -= player.dir.y * player.speed;
+		player.pos.z -= player.dir.z * player.speed + player.speed;
 	}
 
 	// Chodzenie do tyłu:
 	if (keystate['d']) {
-		player.pos.x += player.dir.x * player.speed + 0.1f;
+		player.pos.x += player.dir.x * player.speed + player.speed;
+		player.pos.y += player.dir.y * player.speed;
+		player.pos.z += player.dir.z * player.speed + player.speed;
 	}
+
+		// Obrot kamery
+	if (keystate['z']) {
+		float angle = atan2(player.dir.z, player.dir.x);
+		angle -= .1f;
+		player.dir.x = cos(angle);
+		player.dir.z = sin(angle);
+	}
+
+
 
 }
 

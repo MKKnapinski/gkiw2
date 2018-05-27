@@ -1,5 +1,6 @@
 ﻿  GKiW_Lab2.cpp
-c:\studia\sem6\gry komputerowe\gkiw2\gkiw_lab2\gkiw_lab2\gkiw_lab2.cpp(119): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+c:\studia\sem6\gry komputerowe\gkiw2\gkiw_lab2\gkiw_lab2\gkiw_lab2.cpp(69): warning C4305: '-=': truncation from 'double' to 'float'
+c:\studia\sem6\gry komputerowe\gkiw2\gkiw_lab2\gkiw_lab2\gkiw_lab2.cpp(156): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
 GKiW_Lab2.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
   GKiW_Lab2.vcxproj -> C:\Studia\SEM6\gry komputerowe\gkiw2\GKiW_Lab2\Debug\GKiW_Lab2.exe
   C:\Studia\SEM6\gry komputerowe\gkiw2\GKiW_Lab2\freeglut\bin\freeglut.dll
